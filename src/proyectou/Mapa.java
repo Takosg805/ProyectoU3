@@ -2,71 +2,67 @@ package proyectou;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 public class Mapa {
     public final int TAMAÑO_TILE = 50;
-    
-    // Ya no escribimos los números a mano, solo declaramos la matriz vacía
     public int[][] nivel;
+    
+    // 1. VARIABLE PARA TU TEXTURA
+    private Image texturaTierra;
 
     public Mapa() {
-        // Al iniciar el juego, mandamos a construir un mapa de 650 columnas (~3 minutos)
         nivel = generarNivelLargo(650); 
+        
+        // 2. CARGAMOS LA TEXTURA DE LAS ROCAS
+        try {
+            URL urlTextura = getClass().getResource("plataforma.png");
+            if (urlTextura != null) {
+                texturaTierra = new ImageIcon(urlTextura).getImage();
+            } else {
+                System.out.println("No se encontró textura_tierra.png en la carpeta proyectou.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al cargar la textura: " + e.getMessage());
+        }
     }
 
-    // MÉTODO GENERADOR DE NIVELES
     private int[][] generarNivelLargo(int totalColumnas) {
-        // Creamos una matriz de 10 filas por "totalColumnas"
-        int[][] nuevoMapa = new int[10][totalColumnas];
+        int[][] nuevoMapa = new int[12][totalColumnas];
 
-        // Recorremos columna por columna armando el nivel
         for (int col = 0; col < totalColumnas; col++) {
-            
-            // 1. ZONA INICIAL SEGURA (Los primeros 15 bloques para reaccionar)
             if (col < 15) {
-                nuevoMapa[9][col] = 1; // Puro suelo seguro
+                nuevoMapa[11][col] = 1; 
             } 
-            
-            // 2. ZONA DE META (Los últimos 10 bloques)
             else if (col >= totalColumnas - 10) {
-                nuevoMapa[9][col] = 1; // Suelo para la meta
-                
-                // Ponemos la pared de la meta exactamente en la penúltima columna
+                nuevoMapa[11][col] = 1; 
                 if (col == totalColumnas - 2) {
-                    nuevoMapa[6][col] = 3;
-                    nuevoMapa[7][col] = 3;
                     nuevoMapa[8][col] = 3;
-                    nuevoMapa[9][col] = 3; 
+                    nuevoMapa[9][col] = 3;
+                    nuevoMapa[10][col] = 3;
+                    nuevoMapa[11][col] = 3; 
                 }
             } 
-            
-            // 3. GENERACIÓN DEL RECORRIDO (Obstáculos y plataformas)
             else {
-                // Por defecto, ponemos suelo en la fila 9
-                nuevoMapa[9][col] = 1;
+                nuevoMapa[11][col] = 1;
 
-                // Para evitar que sea imposible, usamos matemáticas (módulo %) 
-                // para espaciar los obstáculos y que no salgan todos juntos.
-
-                // Cada 12 bloques, un bloque de lava/pico
                 if (col % 12 == 0) {
-                    nuevoMapa[9][col] = 2; 
+                    nuevoMapa[11][col] = 2; 
                 } 
-                // Cada 19 bloques, un hueco en el suelo de 2 bloques de ancho
                 else if (col % 19 == 0) {
-                    nuevoMapa[9][col] = 0;   // Aire
-                    nuevoMapa[9][col+1] = 0; // Aire en el siguiente también
-                    col++; // Saltamos un ciclo para no sobrescribir el hueco
+                    nuevoMapa[11][col] = 0;   
+                    nuevoMapa[11][col+1] = 0; 
+                    col++; 
                 }
-                // Cada 15 bloques, una plataforma flotante para saltar
                 else if (col % 15 == 0) {
-                    nuevoMapa[6][col] = 1;
-                    nuevoMapa[6][col+1] = 1;
-                    nuevoMapa[6][col+2] = 1;
+                    nuevoMapa[8][col] = 1;
+                    nuevoMapa[8][col+1] = 1;
+                    nuevoMapa[8][col+2] = 1;
                 }
             }
         }
-        
         return nuevoMapa;
     }
 
@@ -83,17 +79,27 @@ public class Mapa {
                     if (xPantalla + TAMAÑO_TILE > 0 && xPantalla < 800) {
                         
                         if (tipoBloque == 1) {
-                            g2d.setColor(new Color(139, 69, 19)); // Tierra
-                            g2d.fillRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
+                            // 3. DIBUJAMOS LA TEXTURA EN LUGAR DEL COLOR CAFÉ
+                            if (texturaTierra != null) {
+                                // drawImage estira la imagen al tamaño exacto de tu bloque (50x50)
+                                g2d.drawImage(texturaTierra, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
+                            } else {
+                                // Respaldo por si hay algún error con la imagen
+                                g2d.setColor(new Color(139, 69, 19)); 
+                                g2d.fillRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
+                            }
+                            
+                            // Mantenemos el borde verde temporalmente (puedes borrarlo después)
                             g2d.setColor(Color.GREEN); 
                             g2d.drawRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
+                            
                         } else if (tipoBloque == 2) {
-                            g2d.setColor(Color.RED); // Lava
+                            g2d.setColor(Color.RED); 
                             g2d.fillRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
                             g2d.setColor(Color.GREEN); 
                             g2d.drawRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
+                            
                         } else if (tipoBloque == 3) {
-                            // Hitbox de la Meta
                             g2d.setColor(new Color(255, 255, 0, 50)); 
                             g2d.fillRect(xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE);
                             g2d.setColor(Color.YELLOW); 
