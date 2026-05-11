@@ -26,6 +26,13 @@ public class Jugador {
     public boolean saltando = false;
     public boolean enSuelo = false;
     public boolean haGanado = false;
+    
+    public Color colorJugador;
+    
+    // Constructor que recibe el color
+    public Jugador(Color colorJugador) {
+        this.colorJugador = colorJugador;
+    }
 
     public Rectangle getHitArriba() { return new Rectangle(x + 5, y, ancho - 10, 5); }
     public Rectangle getHitAbajo() { return new Rectangle(x + 5, y + alto - 5, ancho - 10, 5); }
@@ -140,7 +147,7 @@ public class Jugador {
 
         int xPantalla = x - camaraX; 
 
-        g2d.setColor(new Color(100, 150, 255));
+        g2d.setColor(colorJugador);
         g2d.fillRect(xPantalla, y, ancho, alto);
 
         g2d.setColor(Color.GREEN);

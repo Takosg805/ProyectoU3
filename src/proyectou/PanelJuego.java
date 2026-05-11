@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -21,19 +22,28 @@ public class PanelJuego extends JPanel implements Runnable {
     private Mapa mapa;
     private int camaraX = 0;
     
-    private Image imagenFondo; 
+    private Image imagenFondo;
+    
+    private int personajeSeleccionado;
+    
+    private boolean enPausa = false;
+    private ProyectoU3 ventanaPrincipal; // referencia a la ventana
 
-    public PanelJuego() {
+    public PanelJuego(ProyectoU3 ventanaPrincipal,int personajeSeleccionado) {
         setPreferredSize(new Dimension(800, 600)); 
         setFocusable(true);
+        this.ventanaPrincipal = ventanaPrincipal;
+        this.personajeSeleccionado = personajeSeleccionado;
+        inicializarEntidades();
         
-        jugador = new Jugador();
+    
+       
         mapa = new Mapa();
         
         // AJUSTE DE VELOCIDADES PARA QUE NO SE PIERDAN:
         // Jugador: 5 | Naranja (npc1): 6 | Magenta (npc2): 4
-        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
-        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
+//        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
+//        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
 
         try {
             URL urlFondo = getClass().getResource("fondo.png");
@@ -43,8 +53,17 @@ public class PanelJuego extends JPanel implements Runnable {
         } catch (Exception e) {}
 
         addKeyListener(new KeyAdapter() {
+            
             @Override
-            public void keyPressed(KeyEvent e) {
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    enPausa = !enPausa; // alterna pausa
+                    repaint();
+                }
+                if (enPausa && e.getKeyCode() == KeyEvent.VK_M) {
+                ventanaPrincipal.mostrarMenu();
+                }
+                if (!enPausa) {
                 if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE) {
                     jugador.saltando = true;
                 }
@@ -52,6 +71,8 @@ public class PanelJuego extends JPanel implements Runnable {
                 if ((jugador.estaMuerto || jugador.haGanado) && e.getKeyCode() == KeyEvent.VK_R) {
                     reiniciarNivelCompleto();
                 }
+                
+              } 
             }
             @Override
             public void keyReleased(KeyEvent e) {
@@ -61,13 +82,30 @@ public class PanelJuego extends JPanel implements Runnable {
             }
         });
     }
+    
+    private void inicializarEntidades(){
+    if (personajeSeleccionado == 0) {
+        jugador = new Jugador(Color.BLUE);
+        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE);
+        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA);
+    } else if (personajeSeleccionado == 1) {
+        jugador = new Jugador(Color.ORANGE);
+        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.BLUE);
+        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA);
+    } else {
+        jugador = new Jugador(Color.MAGENTA);
+        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.BLUE);
+        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.ORANGE);
+    }
+    
+    
+    }
 
     // Método para cuando mueres definitivamente o ganas (Resetea todo)
     private void reiniciarNivelCompleto() {
-        jugador = new Jugador();
+        
         mapa = new Mapa();
-        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
-        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
+        inicializarEntidades(); 
         camaraX = 0;
         iniciarJuego(); 
     }
@@ -84,6 +122,7 @@ public class PanelJuego extends JPanel implements Runnable {
 
         while (corriendo) {
             // Solo detenemos el hilo si el jugador pierde todas sus vidas o llega a la meta
+            
             if (jugador.haGanado || jugador.estaMuerto) {
                 corriendo = false; 
             } else {
@@ -120,6 +159,21 @@ public class PanelJuego extends JPanel implements Runnable {
         npc1.dibujar(g2d, camaraX);
         npc2.dibujar(g2d, camaraX);
         jugador.dibujar(g2d, camaraX);
+        
+        if (enPausa) {
+        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Arial", Font.BOLD, 40));
+        g2d.drawString("PAUSA", 330, 200);
+
+        g2d.setFont(new Font("Arial", Font.PLAIN, 24));
+        g2d.drawString("Presiona ESC para reanudar", 250, 300);
+        g2d.drawString("Presiona M para volver al menú", 240, 350);
+        }
+    
+
 
         // --- DIBUJAR INTERFAZ DE VIDAS ---
         g2d.setColor(Color.RED);

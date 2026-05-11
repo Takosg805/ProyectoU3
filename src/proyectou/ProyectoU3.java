@@ -3,8 +3,11 @@ package proyectou;
 import javax.swing.JFrame;
 
 public class ProyectoU3 extends JFrame {
+    public int personajeSeleccionado = 0; // 0 = Azul, 1 = Naranja, 2 = Magenta
+
     
     public ProyectoU3() {
+        
         // Configuraciones básicas de la ventana
         setTitle("Stroke Race - Menú Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,10 +24,17 @@ public class ProyectoU3 extends JFrame {
         pack();               // Ajustamos la ventana al tamaño del panel
         setLocationRelativeTo(null); // Centramos en pantalla
     }
-
+    
+    public void mostrarSeleccionPersonaje() {
+        PanelSeleccionPersonaje panelSel = new PanelSeleccionPersonaje(this);
+        setContentPane(panelSel);
+        pack();
+        setLocationRelativeTo(null);
+    }
+    
     // Método para arrancar el juego (Llamado desde el botón "Jugar" de tu PanelMenu)
     public void cambiarAJuego() {
-        PanelJuego panelJuego = new PanelJuego();
+        PanelJuego panelJuego = new PanelJuego(this, personajeSeleccionado);
         
         setTitle("Stroke Race - Físicas y Gravedad"); // Cambiamos el título de la ventana
         setContentPane(panelJuego); // Quitamos el menú y ponemos el juego
