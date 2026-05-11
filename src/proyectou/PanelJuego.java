@@ -17,38 +17,40 @@ public class PanelJuego extends JPanel implements Runnable {
     private boolean corriendo = false;
 
     private Jugador jugador;
+    private NPC npc1, npc2;
     private Mapa mapa;
     private int camaraX = 0;
     
-    // Variable para guardar el fondo
     private Image imagenFondo; 
 
     public PanelJuego() {
-        // 1. Forzamos el tamaño del panel para que empate con la matriz
         setPreferredSize(new Dimension(800, 600)); 
         setFocusable(true);
         
         jugador = new Jugador();
         mapa = new Mapa();
+        
+        // AJUSTE DE VELOCIDADES PARA QUE NO SE PIERDAN:
+        // Jugador: 5 | Naranja (npc1): 6 | Magenta (npc2): 4
+        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
+        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
 
-        // 2. Cargamos la imagen de fondo de forma segura
         try {
             URL urlFondo = getClass().getResource("fondo.png");
             if (urlFondo != null) {
                 imagenFondo = new ImageIcon(urlFondo).getImage();
-            } else {
-                System.out.println("No se encontró fondo.png en la carpeta proyectou.");
             }
-        } catch (Exception e) {
-            System.out.println("Error al cargar la imagen: " + e.getMessage());
-        }
+        } catch (Exception e) {}
 
-        // 3. Controles del jugador (Como corre solo, solo necesita saltar)
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE) {
                     jugador.saltando = true;
+                }
+                // Si perdiste todas las vidas (Game Over) o ganaste, la tecla R reinicia el nivel
+                if ((jugador.estaMuerto || jugador.haGanado) && e.getKeyCode() == KeyEvent.VK_R) {
+                    reiniciarNivelCompleto();
                 }
             }
             @Override
@@ -60,44 +62,44 @@ public class PanelJuego extends JPanel implements Runnable {
         });
     }
 
-    // Método para arrancar el Game Loop
+    // Método para cuando mueres definitivamente o ganas (Resetea todo)
+    private void reiniciarNivelCompleto() {
+        jugador = new Jugador();
+        mapa = new Mapa();
+        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
+        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
+        camaraX = 0;
+        iniciarJuego(); 
+    }
+
     public void iniciarJuego() {
         corriendo = true;
         hiloJuego = new Thread(this);
         hiloJuego.start();
     }
 
-    // El Game Loop principal
     @Override
     public void run() {
-        long tiempoEspera = 1000 / 60; // 60 FPS
+        long tiempoEspera = 1000 / 60; 
 
         while (corriendo) {
-            // Si el jugador toca la meta, detenemos el mundo
-            if (jugador.haGanado) {
-                corriendo = false;
+            // Solo detenemos el hilo si el jugador pierde todas sus vidas o llega a la meta
+            if (jugador.haGanado || jugador.estaMuerto) {
+                corriendo = false; 
             } else {
-                // Actualizamos físicas y colisiones
+                // Actualizamos a todos. Los NPCs NO se resetean si el jugador solo pierde una vida.
                 jugador.actualizar(mapa);
+                npc1.actualizar(mapa);
+                npc2.actualizar(mapa);
                 
-                // La cámara sigue al jugador manteniéndolo a 100px del borde izquierdo
+                // La cámara sigue al jugador. Si el Magenta va a 4 y tú a 5, 
+                // se quedará un poco atrás pero seguirá dentro de los 800px de la pantalla.
                 camaraX = jugador.x - 100;
-                
-                // Evitamos que la cámara muestre áreas negativas al inicio
-                if (camaraX < 0) {
-                    camaraX = 0;
-                }
+                if (camaraX < 0) camaraX = 0;
             }
 
-            // Mandamos a redibujar la pantalla
             repaint();
-
-            // Pausa para mantener los FPS estables
-            try { 
-                Thread.sleep(tiempoEspera); 
-            } catch (Exception e) { 
-                e.printStackTrace();
-            }
+            try { Thread.sleep(tiempoEspera); } catch (Exception e) {}
         }
     }
 
@@ -106,36 +108,50 @@ public class PanelJuego extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // 1. DIBUJAMOS EL FONDO PRIMERO (Capa más lejana)
+        // Dibujar Fondo
         if (imagenFondo != null) {
             g2d.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
         } else {
-            // Si no hay imagen, pintamos un cielo celeste de respaldo
             g2d.setColor(Color.CYAN); 
             g2d.fillRect(0, 0, getWidth(), getHeight());
         }
 
-        // 2. DIBUJAMOS EL MAPA (Se mueve restándole la cámara)
         mapa.dibujar(g2d, camaraX);
-
-        // 3. DIBUJAMOS AL JUGADOR (Se mueve restándole la cámara)
+        npc1.dibujar(g2d, camaraX);
+        npc2.dibujar(g2d, camaraX);
         jugador.dibujar(g2d, camaraX);
 
-        // 4. DIBUJAMOS EL PANEL DE VICTORIA (Capa más cercana, encima de todo)
+        // --- DIBUJAR INTERFAZ DE VIDAS ---
+        g2d.setColor(Color.RED);
+        g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24)); 
+        String textoVidas = "Vidas: ";
+        for(int i = 0; i < jugador.vidas; i++) {
+            textoVidas += "❤ ";
+        }
+        g2d.drawString(textoVidas, 20, 40);
+
+        // Panel de Victoria
         if (jugador.haGanado) {
-            // Filtro oscuro semi-transparente
             g2d.setColor(new Color(0, 0, 0, 150)); 
             g2d.fillRect(0, 0, getWidth(), getHeight());
-
-            // Texto de victoria centrado
             g2d.setColor(Color.YELLOW);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 40)); 
             g2d.drawString("¡NIVEL COMPLETADO!", 180, 300);
-            
-            // Subtítulo
             g2d.setColor(Color.WHITE);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
-            g2d.drawString("¡Buen trabajo en Stroke Race!", 260, 350);
+            g2d.drawString("Presiona 'R' para jugar de nuevo", 240, 350);
+        }
+
+        // Panel de Game Over (Cuando vidas llega a 0)
+        if (jugador.estaMuerto) {
+            g2d.setColor(new Color(255, 0, 0, 150)); 
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 60)); 
+            g2d.drawString("¡GAME OVER!", 200, 280);
+            g2d.setColor(Color.YELLOW);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
+            g2d.drawString("Presiona 'R' para volver a intentarlo", 240, 330);
         }
     }
 }
