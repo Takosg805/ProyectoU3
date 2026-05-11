@@ -29,7 +29,7 @@ public class PanelJuego extends JPanel implements Runnable {
     private boolean enPausa = false;
     private ProyectoU3 ventanaPrincipal; // referencia a la ventana
     
-    Musica musicaFondo;
+    
 
     public PanelJuego(ProyectoU3 ventanaPrincipal,int personajeSeleccionado) {
         setPreferredSize(new Dimension(800, 600)); 
@@ -59,15 +59,20 @@ public class PanelJuego extends JPanel implements Runnable {
             @Override
                 public void keyPressed(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    ventanaPrincipal.musicaFondo.detener();
                     enPausa = !enPausa; // alterna pausa
-                    if (!enPausa) {
-                synchronized (PanelJuego.this) {
+                    if (enPausa) {
+                    ventanaPrincipal.musicaFondo.detener(); // detener música al pausar
+                    } else {
+                    ventanaPrincipal.musicaFondo.reproducirLoop(); // reanudar música
+                    synchronized (PanelJuego.this) {
                     PanelJuego.this.notify(); // despierta el hilo
                         }
                     }
                     repaint();
                 }
                 if (enPausa && e.getKeyCode() == KeyEvent.VK_M) {
+                ventanaPrincipal.musicaFondo.detener();
                 ventanaPrincipal.mostrarMenu();
                 }
                 if (!enPausa) {
@@ -118,8 +123,6 @@ public class PanelJuego extends JPanel implements Runnable {
     }
 
     public void iniciarJuego() {
-        musicaFondo = new Musica("/proyectou/Paper_dash.wav");
-        musicaFondo.reproducirLoop();
         corriendo = true;
         hiloJuego = new Thread(this);
         hiloJuego.start();
@@ -152,6 +155,7 @@ public class PanelJuego extends JPanel implements Runnable {
                 // se quedará un poco atrás pero seguirá dentro de los 800px de la pantalla.
                 camaraX = jugador.x - 100;
                 if (camaraX < 0) camaraX = 0;
+                
             }
 
             repaint();
@@ -211,6 +215,7 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.setColor(Color.WHITE);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para jugar de nuevo", 240, 350);
+            ventanaPrincipal.musicaFondo.detener();
         }
 
         // Panel de Game Over (Cuando vidas llega a 0)
@@ -223,6 +228,8 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.setColor(Color.YELLOW);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para volver a intentarlo", 240, 330);
+             ventanaPrincipal.musicaFondo.detener();
+            
         }
     }
 }

@@ -4,15 +4,16 @@ import javax.swing.JFrame;
 
 public class ProyectoU3 extends JFrame {
     public int personajeSeleccionado = 0; // 0 = Azul, 1 = Naranja, 2 = Magenta
-    
-    
+    Musica musicaMenu;
+    Musica musicaFondo;
     public ProyectoU3() {
         
         // Configuraciones básicas de la ventana
         setTitle("Stroke Race - Menú Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false); // Evitamos que el usuario deforme la ventana y arruine el tamaño de 800x600
-        
+        musicaFondo = new Musica("/proyectou/Paper_dash.wav");
+        musicaMenu = new Musica("/proyectou/Paper_dash.wav");
         // Al arrancar el programa, mostramos el menú primero
         mostrarMenu();
     }
@@ -23,6 +24,8 @@ public class ProyectoU3 extends JFrame {
         setContentPane(menu); // Quitamos lo que haya y ponemos el menú
         pack();               // Ajustamos la ventana al tamaño del panel
         setLocationRelativeTo(null); // Centramos en pantalla
+        musicaFondo.detener();   // aseguramos que la música del juego se detenga
+        musicaMenu.reproducirLoop(); // reproducimos música del menú
     }
     
     public void mostrarSeleccionPersonaje() {
@@ -46,7 +49,10 @@ public class ProyectoU3 extends JFrame {
         panelJuego.requestFocusInWindow(); 
         
         // Arrancamos el Hilo (Game Loop) del panel de juego
-        panelJuego.iniciarJuego(); 
+        panelJuego.iniciarJuego();
+        
+        musicaMenu.detener();    // detenemos música del menú
+        musicaFondo.reproducirLoop(); // reproducimos música del juego
     }
 
     public static void main(String[] args) {
