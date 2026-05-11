@@ -58,6 +58,11 @@ public class PanelJuego extends JPanel implements Runnable {
                 public void keyPressed(KeyEvent e) {
                     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     enPausa = !enPausa; // alterna pausa
+                    if (!enPausa) {
+                synchronized (PanelJuego.this) {
+                    PanelJuego.this.notify(); // despierta el hilo
+                        }
+                    }
                     repaint();
                 }
                 if (enPausa && e.getKeyCode() == KeyEvent.VK_M) {
@@ -120,9 +125,17 @@ public class PanelJuego extends JPanel implements Runnable {
     public void run() {
         long tiempoEspera = 1000 / 60; 
 
-        while (corriendo) {
-            // Solo detenemos el hilo si el jugador pierde todas sus vidas o llega a la meta
-            
+            while (corriendo) {
+                // Solo detenemos el hilo si el jugador pierde todas sus vidas o llega a la meta
+                synchronized (this) {
+                while (enPausa) {
+                    try {
+                        wait(); // el hilo se detiene aquí
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             if (jugador.haGanado || jugador.estaMuerto) {
                 corriendo = false; 
             } else {
