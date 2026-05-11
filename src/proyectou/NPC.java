@@ -8,6 +8,8 @@ public class NPC {
     public int x, y;
     public int ancho = 60, alto = 60;
     
+    public int puntuacion = 0;
+    
     // Físicas
     public double vy = 0;
     public double gravedad = 0.5;
@@ -37,7 +39,7 @@ public class NPC {
     public void actualizar(Mapa mapa) {
         // Avance automático
         x += velocidadAvance;
-
+        
         // Gravedad
         vy += gravedad;
         y += (int) vy;
@@ -119,6 +121,8 @@ public class NPC {
                 saltar();
             }
         }
+        
+        
     }
 
     public void saltar() {
@@ -138,7 +142,7 @@ public class NPC {
             g2d.drawRect(xPantalla, y, ancho, alto); // Contorno para verlo mejor
         }
     }
-
+    
     // Hitboxes
     public Rectangle getHitArriba() { return new Rectangle(x + 5, y, ancho - 10, 5); }
     public Rectangle getHitAbajo() { return new Rectangle(x + 5, y + alto - 5, ancho - 10, 5); }

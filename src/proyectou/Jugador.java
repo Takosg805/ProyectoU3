@@ -9,6 +9,8 @@ public class Jugador {
     public int x = 50; 
     public int y = 50;  
     
+    public int puntuacion = 0;
+    
     public int vidas = 3; 
     public boolean estaMuerto = false;
     
@@ -31,7 +33,7 @@ public class Jugador {
     
     // Constructor que recibe el color
     public Jugador(Color colorJugador) {
-        this.colorJugador = colorJugador;
+        
     }
 
     public Rectangle getHitArriba() { return new Rectangle(x + 5, y, ancho - 10, 5); }
@@ -156,4 +158,4 @@ public class Jugador {
         g2d.fillRect(xPantalla, y + 5, 5, alto - 10); 
         g2d.fillRect(xPantalla + ancho - 5, y + 5, 5, alto - 10); 
     }
-}
+    }

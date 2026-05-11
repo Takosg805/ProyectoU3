@@ -194,7 +194,12 @@ public class PanelJuego extends JPanel implements Runnable {
         g2d.drawString("Presiona M para volver al menú", 240, 350);
         }
     
-
+        // --- DIBUJAR INTERFAZ DE PUNTOS ---
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+        g2d.drawString("Jugador: " + jugador.puntuacion, 20, 70);
+        g2d.drawString("NPC1: " + npc1.puntuacion, 20, 100);
+        g2d.drawString("NPC2: " + npc2.puntuacion, 20, 130);
 
         // --- DIBUJAR INTERFAZ DE VIDAS ---
         g2d.setColor(Color.RED);
@@ -216,6 +221,24 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para jugar de nuevo", 240, 350);
             ventanaPrincipal.musicaFondo.detener();
+            
+            // PUNTUACIÓN
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20));
+            g2d.drawString("Puntuación final Jugador: " + jugador.puntuacion, 240, 380);
+            g2d.drawString("Puntuación final NPC1: " + npc1.puntuacion, 240, 410);
+            g2d.drawString("Puntuación final NPC2: " + npc2.puntuacion, 240, 440);
+
+            // Determinar ganador
+            int maxPuntos = Math.max(jugador.puntuacion, Math.max(npc1.puntuacion, npc2.puntuacion));
+            String ganador = "";
+            if (jugador.puntuacion == maxPuntos) ganador = "Jugador";
+            else if (npc1.puntuacion == maxPuntos) ganador = "NPC1";
+            else ganador = "NPC2";
+
+            g2d.setColor(Color.YELLOW);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+            g2d.drawString("Ganador: " + ganador, 240, 480);
         }
 
         // Panel de Game Over (Cuando vidas llega a 0)
@@ -229,6 +252,24 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para volver a intentarlo", 240, 330);
              ventanaPrincipal.musicaFondo.detener();
+            
+            // PUNTUACIÓN
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20));
+            g2d.drawString("Puntuación final Jugador: " + jugador.puntuacion, 240, 380);
+            g2d.drawString("Puntuación final NPC1: " + npc1.puntuacion, 240, 410);
+            g2d.drawString("Puntuación final NPC2: " + npc2.puntuacion, 240, 440);
+
+            // Determinar ganador
+            int maxPuntos = Math.max(jugador.puntuacion, Math.max(npc1.puntuacion, npc2.puntuacion));
+            String ganador = "";
+            if (jugador.puntuacion == maxPuntos) ganador = "Jugador";
+            else if (npc1.puntuacion == maxPuntos) ganador = "NPC1";
+            else ganador = "NPC2";
+
+            g2d.setColor(Color.YELLOW);
+            g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+            g2d.drawString("Ganador: " + ganador, 240, 480);
             
         }
     }
