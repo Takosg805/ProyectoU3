@@ -35,7 +35,7 @@ public class PanelMenu extends JPanel {
         // Al presionar jugar, le decimos a la ventana principal que cambie la pantalla
         btnJugar.addActionListener(e -> ventanaPrincipal.cambiarAJuego());
 
-        JButton btnOpciones = new JButton("OPCIONES");
+        JButton btnOpciones = new JButton("PERSONAJES");
         btnOpciones.setBounds(300, 330, 200, 50);
         btnOpciones.setFont(new Font("Arial", Font.BOLD, 24));
         btnOpciones.addActionListener(e -> JOptionPane.showMessageDialog(this, "Menú de opciones en construcción..."));
