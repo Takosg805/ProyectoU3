@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 
 public class ProyectoU3 extends JFrame {
     public int personajeSeleccionado = 0; // 0 = Azul, 1 = Naranja, 2 = Magenta
-
+    
     
     public ProyectoU3() {
         

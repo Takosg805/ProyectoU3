@@ -28,6 +28,8 @@ public class PanelJuego extends JPanel implements Runnable {
     
     private boolean enPausa = false;
     private ProyectoU3 ventanaPrincipal; // referencia a la ventana
+    
+    Musica musicaFondo;
 
     public PanelJuego(ProyectoU3 ventanaPrincipal,int personajeSeleccionado) {
         setPreferredSize(new Dimension(800, 600)); 
@@ -116,6 +118,8 @@ public class PanelJuego extends JPanel implements Runnable {
     }
 
     public void iniciarJuego() {
+        musicaFondo = new Musica("/proyectou/Paper_dash.wav");
+        musicaFondo.reproducirLoop();
         corriendo = true;
         hiloJuego = new Thread(this);
         hiloJuego.start();
