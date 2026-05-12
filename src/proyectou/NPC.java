@@ -2,7 +2,9 @@ package proyectou;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import javax.swing.ImageIcon;
 
 public class NPC {
     public int x, y;
@@ -16,18 +18,23 @@ public class NPC {
     public double fuerzaSalto = -14;
     public double velocidadAvance;
     public boolean enSuelo = false;
+    
+    
+    private Image sprite;
 
     private double probError; 
     private int distanciaVision; // Qué tan lejos mira hacia adelante
-    private Color color;
+   
 
-    public NPC(int startX, int startY, double velocidadAvance, double probError, Color color) {
+    public NPC(int startX, int startY, double velocidadAvance, double probError, String rutaSprite) {
         this.x = startX;
         this.y = startY;
         this.velocidadAvance = velocidadAvance;
         this.probError = probError;
-        this.color = color;
         
+        ancho = 60;
+        alto = 60;
+        sprite = new ImageIcon(getClass().getResource(rutaSprite)).getImage();
         // Asignamos su "visión" dependiendo de si es torpe o preciso
         if (probError > 0) {
             this.distanciaVision = 10; // NPC Torpe: Mira muy cerca de su cara
@@ -136,10 +143,8 @@ public class NPC {
         int xPantalla = x - camaraX;
         // Solo lo dibujamos si está dentro de la pantalla para optimizar
         if (xPantalla + ancho > -100 && xPantalla < 900) {
-            g2d.setColor(this.color);
-            g2d.fillRect(xPantalla, y, ancho, alto);
-            g2d.setColor(Color.BLACK);
-            g2d.drawRect(xPantalla, y, ancho, alto); // Contorno para verlo mejor
+            g2d.drawImage(sprite, x - camaraX, y, ancho, alto, null);
+            
         }
     }
     

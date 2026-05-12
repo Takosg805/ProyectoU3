@@ -33,12 +33,12 @@ public class PanelMenu extends JPanel {
         btnJugar.setBounds(300, 250, 200, 50); // x, y, ancho, alto
         btnJugar.setFont(new Font("Arial", Font.BOLD, 24));
         // Al presionar jugar, le decimos a la ventana principal que cambie la pantalla
-        btnJugar.addActionListener(e -> ventanaPrincipal.cambiarAJuego());
+        btnJugar.addActionListener(e -> ventanaPrincipal.mostrarSeleccionPersonaje());
 
-        JButton btnOpciones = new JButton("PERSONAJES");
-        btnOpciones.setBounds(300, 330, 200, 50);
-        btnOpciones.setFont(new Font("Arial", Font.BOLD, 24));
-        btnOpciones.addActionListener(e -> ventanaPrincipal.mostrarSeleccionPersonaje());
+//        JButton btnOpciones = new JButton("PERSONAJES");
+//        btnOpciones.setBounds(300, 330, 200, 50);
+//        btnOpciones.setFont(new Font("Arial", Font.BOLD, 24));
+//        btnOpciones.addActionListener(e -> ventanaPrincipal.mostrarSeleccionPersonaje());
         
         JButton btnSalir = new JButton("SALIR");
         btnSalir.setBounds(300, 410, 200, 50);
@@ -47,7 +47,6 @@ public class PanelMenu extends JPanel {
 
         // 3. AGREGAMOS LOS BOTONES AL PANEL
         add(btnJugar);
-        add(btnOpciones);
         add(btnSalir);
     }
 

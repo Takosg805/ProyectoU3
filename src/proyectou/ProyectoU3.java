@@ -3,7 +3,7 @@ package proyectou;
 import javax.swing.JFrame;
 
 public class ProyectoU3 extends JFrame {
-    public int personajeSeleccionado = 0; // 0 = Azul, 1 = Naranja, 2 = Magenta
+    public int personajeSeleccionado = 0; 
     Musica musicaMenu;
     Musica musicaFondo;
     public ProyectoU3() {
@@ -36,12 +36,13 @@ public class ProyectoU3 extends JFrame {
     }
     
     // Método para arrancar el juego (Llamado desde el botón "Jugar" de tu PanelMenu)
-    public void cambiarAJuego() {
+    public void cambiarAJuego(int personajeSeleccionado) {
         PanelJuego panelJuego = new PanelJuego(this, personajeSeleccionado);
         
         setTitle("Stroke Race - Físicas y Gravedad"); // Cambiamos el título de la ventana
         setContentPane(panelJuego); // Quitamos el menú y ponemos el juego
         pack(); // Reajustamos por si acaso
+        
         
         // ¡MUY IMPORTANTE! 
         // Al hacer clic en "JUGAR", el enfoque (focus) se queda atascado en el clic del ratón[cite: 282]. 

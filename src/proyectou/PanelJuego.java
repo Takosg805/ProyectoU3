@@ -16,6 +16,8 @@ public class PanelJuego extends JPanel implements Runnable {
 
     private Thread hiloJuego;
     private boolean corriendo = false;
+    
+    
 
     private Jugador jugador;
     private NPC npc1, npc2;
@@ -42,11 +44,7 @@ public class PanelJuego extends JPanel implements Runnable {
        
         mapa = new Mapa();
         
-        // AJUSTE DE VELOCIDADES PARA QUE NO SE PIERDAN:
-        // Jugador: 5 | Naranja (npc1): 6 | Magenta (npc2): 4
-//        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE); 
-//        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA); 
-
+        
         try {
             URL urlFondo = getClass().getResource("fondo.png");
             if (urlFondo != null) {
@@ -97,17 +95,17 @@ public class PanelJuego extends JPanel implements Runnable {
     
     private void inicializarEntidades(){
     if (personajeSeleccionado == 0) {
-        jugador = new Jugador(Color.BLUE);
-        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.ORANGE);
-        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA);
+        jugador = new Jugador("/proyectou/personaje1.png");
+        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje2.png"));
+        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje3.png"));
     } else if (personajeSeleccionado == 1) {
-        jugador = new Jugador(Color.ORANGE);
-        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.BLUE);
-        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.MAGENTA);
-    } else {
-        jugador = new Jugador(Color.MAGENTA);
-        npc1 = new NPC(50, 50, 5.000000000000001, 0.3, Color.BLUE);
-        npc2 = new NPC(50, 50, 4.999999999999999, 0.0, Color.ORANGE);
+        jugador = new Jugador("/proyectou/personaje3.png");
+        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje1.png"));
+        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje2.png"));
+    } else if (personajeSeleccionado == 2){
+        jugador = new Jugador("/proyectou/personaje2.png");
+        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje1.png"));
+        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje3.png"));
     }
     
     
@@ -177,9 +175,9 @@ public class PanelJuego extends JPanel implements Runnable {
         }
 
         mapa.dibujar(g2d, camaraX);
+        jugador.dibujar(g2d,camaraX);
         npc1.dibujar(g2d, camaraX);
         npc2.dibujar(g2d, camaraX);
-        jugador.dibujar(g2d, camaraX);
         
         if (enPausa) {
         g2d.setColor(new Color(0, 0, 0, 150));

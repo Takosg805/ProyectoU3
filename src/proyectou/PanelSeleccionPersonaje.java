@@ -1,38 +1,28 @@
 package proyectou;
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 public class PanelSeleccionPersonaje extends JPanel {
-    private ProyectoU3 ventana;
-
+    private ProyectoU3 ventanaPrincipal;
+    private int personajeSeleccionado;
     public PanelSeleccionPersonaje(ProyectoU3 ventana) {
-        this.ventana = ventana;
+        this.ventanaPrincipal = ventana;
         setPreferredSize(new Dimension(800, 600));
         setLayout(null);
 
-        JButton btnAzul = new JButton("Jugador Azul");
-        btnAzul.setBounds(100, 200, 200, 50);
-        btnAzul.addActionListener(e -> {
-            ventana.personajeSeleccionado = 0;
-            ventana.cambiarAJuego();
-        });
+        JButton botonPersonaje1 = new JButton("Jugador Azul");
+        botonPersonaje1.setBounds(100, 200, 200, 50);
+        botonPersonaje1.addActionListener(e -> ventanaPrincipal.cambiarAJuego(0));
 
-        JButton btnNaranja = new JButton("Jugador Naranja");
-        btnNaranja.setBounds(300, 200, 200, 50);
-        btnNaranja.addActionListener(e -> {
-            ventana.personajeSeleccionado = 1;
-            ventana.cambiarAJuego();
-        });
+        JButton botonPersonaje2= new JButton("Jugador Naranja");
+        botonPersonaje2.setBounds(300, 200, 200, 50);
+         botonPersonaje2.addActionListener(e -> ventanaPrincipal.cambiarAJuego(1));
 
-        JButton btnMagenta = new JButton("Jugador Magenta");
-        btnMagenta.setBounds(500, 200, 200, 50);
-        btnMagenta.addActionListener(e -> {
-            ventana.personajeSeleccionado = 2;
-            ventana.cambiarAJuego();
-        });
+        JButton botonPersonaje3 = new JButton("Jugador Magenta");
+        botonPersonaje3.setBounds(500, 200, 200, 50);
+        botonPersonaje3.addActionListener(e -> ventanaPrincipal.cambiarAJuego(2));
 
-        add(btnAzul);
-        add(btnNaranja);
-        add(btnMagenta);
+        add(botonPersonaje1);
+        add(botonPersonaje2);
+        add(botonPersonaje3);
     }
 }

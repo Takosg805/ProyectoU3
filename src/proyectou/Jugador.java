@@ -2,7 +2,9 @@ package proyectou;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import javax.swing.ImageIcon;
 
 public class Jugador {
 
@@ -28,12 +30,16 @@ public class Jugador {
     public boolean saltando = false;
     public boolean enSuelo = false;
     public boolean haGanado = false;
-    
+    private Image sprite;
     public Color colorJugador;
     
+    private boolean mostrarHitbox = false;
+    
     // Constructor que recibe el color
-    public Jugador(Color colorJugador) {
-        
+    public Jugador(String rutaSprite) {
+        ancho = 60;
+        alto = 60;
+        sprite = new ImageIcon(getClass().getResource(rutaSprite)).getImage(); 
     }
 
     public Rectangle getHitArriba() { return new Rectangle(x + 5, y, ancho - 10, 5); }
@@ -140,7 +146,6 @@ public class Jugador {
             }
         }
     }
-
     public void dibujar(Graphics2D g2d, int camaraX) {
         // EFECTO DE PARPADEO: Si es invencible, intercala dibujos para que parezca fantasma
         if (tiempoInvencible > 0 && (tiempoInvencible / 10) % 2 == 0) {
@@ -149,13 +154,16 @@ public class Jugador {
 
         int xPantalla = x - camaraX; 
 
-        g2d.setColor(colorJugador);
-        g2d.fillRect(xPantalla, y, ancho, alto);
+        
+       
 
-        g2d.setColor(Color.GREEN);
+        g2d.drawImage(sprite, x - camaraX, y, ancho, alto, null);
+        
+        if (mostrarHitbox) {
         g2d.fillRect(xPantalla + 5, y, ancho - 10, 5); 
         g2d.fillRect(xPantalla + 5, y + alto - 5, ancho - 10, 5); 
         g2d.fillRect(xPantalla, y + 5, 5, alto - 10); 
-        g2d.fillRect(xPantalla + ancho - 5, y + 5, 5, alto - 10); 
+        g2d.fillRect(xPantalla + ancho - 5, y + 5, 5, alto - 10);
+        }
     }
     }

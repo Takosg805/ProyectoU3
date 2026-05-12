@@ -1,14 +1,7 @@
 package proyectou;
-
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import javax.swing.ImageIcon;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class Mapa {
     public final int TAMAÑO_TILE = 50;
@@ -24,32 +17,17 @@ public class Mapa {
     public static final int META = 3;
     public static final int OPCIONAL = 4;
     public static final int SIN_SALIDA = 5;
-    
+   
     
     // Ya no escribimos los números a mano, solo declaramos la matriz vacía
     public int[][] nivel;
-
-    // 1. VARIABLE PARA TU TEXTURA
-    private Image texturaTierra;
 
     public Mapa() {
         nivel = generarNivelLargo(650); 
         texturaSuelo = new ImageIcon(getClass().getResource("/proyectou/suelo.png")).getImage();
         texturaLava = new ImageIcon(getClass().getResource("/proyectou/lava.png")).getImage();
         texturaMeta = new ImageIcon(getClass().getResource("/proyectou/obs2.png")).getImage();
-        texturaOpcional = new ImageIcon(getClass().getResource("/proyectou/plataforma1.png")).getImage();
-        texturaSinSalida = new ImageIcon(getClass().getResource("/proyectou/obs1.png")).getImage();
-//        // 2. CARGAMOS LA TEXTURA DE LAS ROCAS
-//        try {
-//            URL urlTextura = getClass().getResource("plataforma.png");
-//            if (urlTextura != null) {
-//                texturaTierra = new ImageIcon(urlTextura).getImage();
-//            } else {
-//                System.out.println("No se encontró textura_tierra.png en la carpeta proyectou.");
-//    }
-//        } catch (Exception e) {
-//            System.out.println("Error al cargar la textura: " + e.getMessage());
-//        }
+        
     }
 
     // MÉTODO GENERADOR DE NIVELES
@@ -119,16 +97,12 @@ public class Mapa {
                     if (xPantalla + TAMAÑO_TILE > 0 && xPantalla < 800) {
                         
                         if (tipoBloque == TIERRA) {
-    g2d.drawImage(texturaSuelo, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-} else if (tipoBloque == LAVA) {
-    g2d.drawImage(texturaLava, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-} else if (tipoBloque == META) {
-    g2d.drawImage(texturaMeta, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-} else if (tipoBloque == OPCIONAL) {
-    g2d.drawImage(texturaOpcional, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-} else if (tipoBloque == SIN_SALIDA) {
-    g2d.drawImage(texturaSinSalida, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-}
+                        g2d.drawImage(texturaSuelo, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
+                    } else if (tipoBloque == LAVA) {
+                        g2d.drawImage(texturaLava, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
+                    } else if (tipoBloque == META) {
+                        g2d.drawImage(texturaMeta, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
+                        } 
                     }
                 }
             }
