@@ -81,9 +81,18 @@ public class Mapa {
                     nuevoMapa[8][col] = 1;
                     nuevoMapa[8][col+1] = 1;
                     nuevoMapa[8][col+2] = 1;
+                    
+                    //Piedras
                 }else if (col % 10 == 0) {
 
-                    nuevoMapa[10][col] = PIEDRA;
+                if (nuevoMapa[11][col] == TIERRA && nuevoMapa[10][col] == VACIO) {
+                nuevoMapa[10][col] = PIEDRA;
+                    }
+                }
+                else if (col % 14 == 0) {
+                if (nuevoMapa[11][col] == TIERRA && nuevoMapa[9][col] == VACIO) {
+                     nuevoMapa[9][col] = PIEDRA;
+                    }
                 }
             }
         }

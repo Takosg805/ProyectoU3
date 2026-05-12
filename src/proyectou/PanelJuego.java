@@ -80,6 +80,7 @@ public class PanelJuego extends JPanel implements Runnable {
                 // Si perdiste todas las vidas (Game Over) o ganaste, la tecla R reinicia el nivel
                 if ((jugador.estaMuerto || jugador.haGanado) && e.getKeyCode() == KeyEvent.VK_R) {
                     reiniciarNivelCompleto();
+                    ventanaPrincipal.reproducirMusicaJuego();
                 }
                 
               } 
@@ -96,16 +97,16 @@ public class PanelJuego extends JPanel implements Runnable {
     private void inicializarEntidades(){
     if (personajeSeleccionado == 0) {
         jugador = new Jugador("/proyectou/personaje1.png");
-        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje2.png"));
-        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje3.png"));
+        npc1 = new NPC(50, 50, 4.000000001, 0.5, ("/proyectou/personaje2.png"));
+        npc2 = new NPC(50, 50, 4.000000000, 0.0, ("/proyectou/personaje3.png"));
     } else if (personajeSeleccionado == 1) {
-        jugador = new Jugador("/proyectou/personaje3.png");
-        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje1.png"));
-        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje2.png"));
-    } else if (personajeSeleccionado == 2){
         jugador = new Jugador("/proyectou/personaje2.png");
-        npc1 = new NPC(50, 50, 5.000000000000111, 0.3, ("/proyectou/personaje1.png"));
-        npc2 = new NPC(50, 50, 4.999999999999999, 0, ("/proyectou/personaje3.png"));
+        npc1 = new NPC(50, 50, 4.000000001, 0.5, ("/proyectou/personaje1.png"));
+        npc2 = new NPC(50, 50, 4.000000000, 0.0, ("/proyectou/personaje3.png"));
+    } else if (personajeSeleccionado == 2){
+        jugador = new Jugador("/proyectou/personaje3.png");
+        npc1 = new NPC(50, 50, 4.000000001, 0.5, ("/proyectou/personaje1.png"));
+        npc2 = new NPC(50, 50,  4.000000000, 0.0, ("/proyectou/personaje2.png"));
     }
     
     
@@ -204,7 +205,7 @@ public class PanelJuego extends JPanel implements Runnable {
         g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24)); 
         String textoVidas = "Vidas: ";
         for(int i = 0; i < jugador.vidas; i++) {
-            textoVidas += "❤ ";
+            textoVidas += "+ ";
         }
         g2d.drawString(textoVidas, 20, 40);
 
@@ -250,6 +251,7 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para volver a intentarlo", 240, 330);
              ventanaPrincipal.musicaFondo.detener();
+             
             
             // PUNTUACIÓN
             g2d.setColor(Color.WHITE);

@@ -41,8 +41,12 @@ public class ProyectoU3 extends JFrame {
         
         setTitle("Stroke Race - Físicas y Gravedad"); // Cambiamos el título de la ventana
         setContentPane(panelJuego); // Quitamos el menú y ponemos el juego
-        pack(); // Reajustamos por si acaso
-        
+        setContentPane(panelJuego);
+        revalidate();   //  fuerza a Swing a recalcular el layout
+        repaint();      // redibuja la ventana
+        pack();         //  ajusta el tamaño de la ventana al contenido
+        setLocationRelativeTo(null); // centra la ventana en pantalla
+        reproducirMusicaJuego();
         
         // ¡MUY IMPORTANTE! 
         // Al hacer clic en "JUGAR", el enfoque (focus) se queda atascado en el clic del ratón[cite: 282]. 
@@ -54,6 +58,14 @@ public class ProyectoU3 extends JFrame {
         
         musicaMenu.detener();    // detenemos música del menú
         musicaFondo.reproducirLoop(); // reproducimos música del juego
+    }
+    
+        public void reproducirMusicaJuego() {
+        musicaFondo.reproducirLoop();
+    }
+
+    public void detenerMusica() {
+        musicaFondo.detener();
     }
 
     public static void main(String[] args) {

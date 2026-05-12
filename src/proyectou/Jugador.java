@@ -25,7 +25,7 @@ public class Jugador {
     public double vy = 0;
     public double gravedad = 0.5;
     public double fuerzaSalto = -14;
-    public int velocidadAvance = 5; 
+    public double velocidadAvance = 4; 
 
     public boolean saltando = false;
     public boolean enSuelo = false;
@@ -143,7 +143,7 @@ public class Jugador {
                         x = bloqueNormal.x - ancho; 
                     }else if (tipoBloque == 6 && velocidadAvance > 0 && getHitDerecha().intersects(bloqueNormal))
                     {
-                        recibirDano();
+                         x = bloqueNormal.x - ancho;
                         return;
                     }
                 }
@@ -169,6 +169,6 @@ public class Jugador {
         g2d.fillRect(xPantalla + 5, y + alto - 5, ancho - 10, 5); 
         g2d.fillRect(xPantalla, y + 5, 5, alto - 10); 
         g2d.fillRect(xPantalla + ancho - 5, y + 5, 5, alto - 10);
+            }
         }
-    }
     }

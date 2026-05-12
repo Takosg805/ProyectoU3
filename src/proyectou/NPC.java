@@ -12,6 +12,7 @@ public class NPC {
     
     public int puntuacion = 0;
     public boolean estaMuerto = false;
+    public int vidas = 3;
     
     // Físicas
     public double vy = 0;
@@ -25,7 +26,10 @@ public class NPC {
 
     private double probError; 
     private int distanciaVision; // Qué tan lejos mira hacia adelante
-   
+    private int ultimaColMuerte = -1; //memoria de errores
+    private int framesAtorado = 0;    //contador de atoros
+    private int ultimoX = -1;         //para detectar si avanza
+    
 
     public NPC(int startX, int startY, double velocidadAvance, double probError, String rutaSprite) {
         this.x = startX;
@@ -37,11 +41,7 @@ public class NPC {
         alto = 60;
         sprite = new ImageIcon(getClass().getResource(rutaSprite)).getImage();
         // Asignamos su "visión" dependiendo de si es torpe o preciso
-        if (probError > 0) {
-            this.distanciaVision = 10; // NPC Torpe: Mira muy cerca de su cara
-        } else {
-            this.distanciaVision = 50; // NPC Preciso: Mira un bloque entero hacia adelante
-        }
+        this.distanciaVision=30;
     }
 
     public void actualizar(Mapa mapa) {
@@ -62,21 +62,17 @@ public class NPC {
         for (int fila = 0; fila < mapa.nivel.length; fila++) {
             for (int col = 0; col < mapa.nivel[fila].length; col++) {
                 int tipoBloque = mapa.nivel[fila][col];
-                if (tipoBloque == 1 || tipoBloque == 2) {
+                if (tipoBloque == mapa.TIERRA || tipoBloque == mapa.LAVA || tipoBloque == mapa.PIEDRA) {
                     Rectangle bloque = new Rectangle(col * mapa.TAMAÑO_TILE, fila * mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE);
                     
                     if (vy > 0 && getHitAbajo().intersects(bloque)) {
                         y = bloque.y - alto;
                         vy = 0;
                         enSuelo = true;
-                        //muerte por lava
-                        if(tipoBloque == mapa.LAVA)
-                            estaMuerto=true;
-                    }
-                    // NUEVO: Si el NPC salta y choca con la cabeza en un techo
-                    else if (vy < 0 && getHitArriba().intersects(bloque)) {
-                        y = bloque.y + bloque.height; // Lo empujamos justo debajo del bloque
-                        vy = 0; // Cortamos el salto para que empiece a caer por la gravedad
+                        if (tipoBloque == mapa.LAVA) perderVida(mapa); // solo lava mata
+                    } else if (vy < 0 && getHitArriba().intersects(bloque)) {
+                        y = bloque.y + bloque.height;
+                        vy = 0;
                     }
                 }
             }
@@ -86,24 +82,21 @@ public class NPC {
         for (int fila = 0; fila < mapa.nivel.length; fila++) {
             for (int col = 0; col < mapa.nivel[fila].length; col++) {
                 int tipoBloque = mapa.nivel[fila][col];
-                if (tipoBloque != 0) {
+                if (tipoBloque != mapa.VACIO) {
                     Rectangle bloque = new Rectangle(col * mapa.TAMAÑO_TILE, fila * mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE);
-                    if ((tipoBloque == 1 || tipoBloque == 2 || tipoBloque == 5 || tipoBloque == 6) && velocidadAvance > 0 && getHitDerecha().intersects(bloque)) {
-                        x = bloque.x - ancho; // Se atora contra la pared
-                        
-                        //muerte por lava
-                        if(tipoBloque == mapa.LAVA)
-                            estaMuerto=true;
-                    }
-                    else if (tipoBloque == 4 && getHitAbajo().intersects(bloque)) {
-                        x -= 10; // zona opcional: ralentiza
+                    if ((tipoBloque == mapa.TIERRA || tipoBloque == mapa.LAVA || tipoBloque == mapa.SIN_SALIDA || tipoBloque == mapa.PIEDRA) 
+                        && velocidadAvance > 0 && getHitDerecha().intersects(bloque)) {
+                        x = bloque.x - ancho;
+                        if (tipoBloque == mapa.LAVA) perderVida(mapa);
+                        if (tipoBloque == mapa.PIEDRA) x -= 3; // retrocede un poco si se pega
+                        if (enSuelo) saltar(); //intenta saltar al pegarse
                     }
                 }
             }
         }
         //Muerte por caída
         if(y>600){
-        estaMuerto=true;
+        perderVida(mapa);
         }
         // ========================================================
         // NUEVA INTELIGENCIA ARTIFICIAL: PUNTO DE VISIÓN
@@ -124,29 +117,79 @@ public class NPC {
             int bloqueFrente = mapa.nivel[filaPies][colFrente];
             int bloqueAbajo = mapa.nivel[filaAbajo][colFrente];
 
-            // Si hay pared en la cara (1, 2, 5) o hay un precipicio/lava abajo (0, 2)
-            if (bloqueFrente == 1 || bloqueFrente == 2 || bloqueFrente == 5 || bloqueAbajo == 0 || bloqueAbajo == 2) {
-                debeSaltar = true;
+           // Diferenciamos obstáculos
+            if (bloqueFrente == mapa.LAVA || bloqueAbajo == mapa.LAVA || bloqueAbajo == mapa.VACIO) {
+                fuerzaSalto = -16; // ⭐ MODIFICACIÓN: salto más fuerte para huecos/lava
+                debeSaltar = true; // mortal → siempre saltar
+            } else if (bloqueFrente == mapa.PIEDRA || bloqueFrente == mapa.SIN_SALIDA) {
+                fuerzaSalto = -14; // salto normal
+                debeSaltar = true; // obstáculo → saltar, pero no mata si falla
+            } else if (bloqueFrente == mapa.TIERRA) {
+                fuerzaSalto = -15; // salto medio para pared
+                debeSaltar = true; // pared → saltar
+            }
+            
+            // ⭐ MODIFICACIÓN: memoria de errores
+                if (colFrente == ultimaColMuerte) {
+                    debeSaltar = true; // salta antes si ya murió aquí
+                }
+        }
+
+               // Aplicamos la toma de decisiones y la probabilidad de error
+            if (debeSaltar && enSuelo) {
+                if (Math.random() < probError) {
+                    // NPC torpe: a veces falla y retrocede
+                    if (Math.random() < 0.5) x -= 2;
+                } else {
+                    saltar(); // salta correctamente
+                }
+            } else if (!debeSaltar && enSuelo && probError > 0) {
+                // NPC torpe: a veces salta sin necesidad
+                if (Math.random() < (probError * 0.02)) {
+                    saltar();
+                }
+            }
+            
+            if (x == ultimoX) {
+            framesAtorado++;
+            if (framesAtorado > 20 && enSuelo) {
+                saltar(); // salto forzado
+                framesAtorado = 0;
+                }
+            } else {
+                framesAtorado = 0;
+            }
+            ultimoX = x;
+    
+    }
+    
+    private void perderVida(Mapa mapa) {
+    vidas--;
+    if (vidas <= 0) {
+        estaMuerto = true;
+    } else {
+        // Buscar un punto seguro cerca de la posición actual
+        int colActual = x / mapa.TAMAÑO_TILE;
+        int filaSegura = -1;
+
+        // Recorremos hacia atrás unas columnas para encontrar suelo
+        for (int col = colActual; col >= Math.max(0, colActual - 5); col--) {
+            for (int fila = mapa.nivel.length - 1; fila >= 0; fila--) {
+                if (mapa.nivel[fila][col] == mapa.TIERRA || mapa.nivel[fila][col] == mapa.PIEDRA) {
+                    filaSegura = fila;
+                    x = col * mapa.TAMAÑO_TILE;
+                    y = (filaSegura * mapa.TAMAÑO_TILE) - alto;
+                    vy = 0;
+                    return;
+                }
             }
         }
 
-        // Aplicamos la toma de decisiones y la probabilidad de error
-        if (debeSaltar && enSuelo) {
-            if (Math.random() < probError) {
-                // Falla el cálculo por torpe (no salta a tiempo o retrocede)
-                if(Math.random() < 0.5) x -= 5; 
-            } else {
-                saltar(); // Salta correctamente
-            }
-        } else if (!debeSaltar && enSuelo && probError > 0) {
-            // Si es muy torpe, a veces salta de la nada por error
-            if (Math.random() < (probError * 0.03)) {
-                saltar();
-            }
-        }
-        
-        
+        // Si no encuentra nada, reaparece un poco más atrás en la misma altura
+        x = Math.max(50, x - 100);
+        vy = 0;
     }
+}
 
     public void saltar() {
         if (enSuelo) {
