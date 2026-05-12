@@ -193,7 +193,7 @@ public class PanelJuego extends JPanel implements Runnable {
         }
     
         // --- DIBUJAR INTERFAZ DE PUNTOS ---
-        g2d.setColor(Color.WHITE);
+        g2d.setColor(Color.GRAY);
         g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
         g2d.drawString("Jugador: " + jugador.puntuacion, 20, 70);
         g2d.drawString("NPC1: " + npc1.puntuacion, 20, 100);

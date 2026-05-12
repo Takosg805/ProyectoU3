@@ -113,7 +113,7 @@ public class Jugador {
                 }
             }
         }
-
+        int xAnterior = x;
         x += velocidadAvance;
 
         for (int fila = 0; fila < mapa.nivel.length; fila++) {
@@ -149,6 +149,7 @@ public class Jugador {
                 }
             }
         }
+        puntuacion += (x-xAnterior);
     }
     public void dibujar(Graphics2D g2d, int camaraX) {
         // EFECTO DE PARPADEO: Si es invencible, intercala dibujos para que parezca fantasma

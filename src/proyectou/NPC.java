@@ -11,6 +11,7 @@ public class NPC {
     public int ancho = 60, alto = 60;
     
     public int puntuacion = 0;
+    public boolean estaMuerto = false;
     
     // Físicas
     public double vy = 0;
@@ -44,8 +45,13 @@ public class NPC {
     }
 
     public void actualizar(Mapa mapa) {
+        
+        if(estaMuerto)
+            return;
         // Avance automático
         x += velocidadAvance;
+        
+        puntuacion= x;
         
         // Gravedad
         vy += gravedad;
@@ -63,6 +69,9 @@ public class NPC {
                         y = bloque.y - alto;
                         vy = 0;
                         enSuelo = true;
+                        //muerte por lava
+                        if(tipoBloque == mapa.LAVA)
+                            estaMuerto=true;
                     }
                     // NUEVO: Si el NPC salta y choca con la cabeza en un techo
                     else if (vy < 0 && getHitArriba().intersects(bloque)) {
@@ -81,6 +90,10 @@ public class NPC {
                     Rectangle bloque = new Rectangle(col * mapa.TAMAÑO_TILE, fila * mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE);
                     if ((tipoBloque == 1 || tipoBloque == 2 || tipoBloque == 5 || tipoBloque == 6) && velocidadAvance > 0 && getHitDerecha().intersects(bloque)) {
                         x = bloque.x - ancho; // Se atora contra la pared
+                        
+                        //muerte por lava
+                        if(tipoBloque == mapa.LAVA)
+                            estaMuerto=true;
                     }
                     else if (tipoBloque == 4 && getHitAbajo().intersects(bloque)) {
                         x -= 10; // zona opcional: ralentiza
@@ -88,7 +101,10 @@ public class NPC {
                 }
             }
         }
-
+        //Muerte por caída
+        if(y>600){
+        estaMuerto=true;
+        }
         // ========================================================
         // NUEVA INTELIGENCIA ARTIFICIAL: PUNTO DE VISIÓN
         // ========================================================
