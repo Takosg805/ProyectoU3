@@ -99,7 +99,7 @@ public class Jugador {
                             return;
                         }
                     } 
-                    else if (tipoBloque == 1) { 
+                    else if (tipoBloque == 1 || tipoBloque == 6) { 
                         if (vy > 0 && getHitAbajo().intersects(bloque)) {
                             y = bloque.y - alto; 
                             vy = 0;
@@ -141,6 +141,10 @@ public class Jugador {
                     }
                     else if (tipoBloque == 5 && getHitDerecha().intersects(bloqueNormal)) {
                         x = bloqueNormal.x - ancho; 
+                    }else if (tipoBloque == 6 && velocidadAvance > 0 && getHitDerecha().intersects(bloqueNormal))
+                    {
+                        recibirDano();
+                        return;
                     }
                 }
             }

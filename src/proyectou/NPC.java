@@ -79,7 +79,7 @@ public class NPC {
                 int tipoBloque = mapa.nivel[fila][col];
                 if (tipoBloque != 0) {
                     Rectangle bloque = new Rectangle(col * mapa.TAMAÑO_TILE, fila * mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE, mapa.TAMAÑO_TILE);
-                    if ((tipoBloque == 1 || tipoBloque == 2 || tipoBloque == 5) && velocidadAvance > 0 && getHitDerecha().intersects(bloque)) {
+                    if ((tipoBloque == 1 || tipoBloque == 2 || tipoBloque == 5 || tipoBloque == 6) && velocidadAvance > 0 && getHitDerecha().intersects(bloque)) {
                         x = bloque.x - ancho; // Se atora contra la pared
                     }
                     else if (tipoBloque == 4 && getHitAbajo().intersects(bloque)) {

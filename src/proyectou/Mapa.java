@@ -11,12 +11,14 @@ public class Mapa {
     private Image texturaMeta;
     private Image texturaOpcional;
     private Image texturaSinSalida;
+    private Image texturaPiedra;
     public static final int VACIO = 0;
     public static final int TIERRA = 1;
     public static final int LAVA = 2;
     public static final int META = 3;
     public static final int OPCIONAL = 4;
     public static final int SIN_SALIDA = 5;
+    public static final int PIEDRA = 6;
    
     
     // Ya no escribimos los números a mano, solo declaramos la matriz vacía
@@ -27,6 +29,8 @@ public class Mapa {
         texturaSuelo = new ImageIcon(getClass().getResource("/proyectou/suelo.png")).getImage();
         texturaLava = new ImageIcon(getClass().getResource("/proyectou/lava.png")).getImage();
         texturaMeta = new ImageIcon(getClass().getResource("/proyectou/obs2.png")).getImage();
+        texturaPiedra = new ImageIcon(getClass().getResource("/proyectou/piedra.png")).getImage();
+
         
     }
 
@@ -77,6 +81,9 @@ public class Mapa {
                     nuevoMapa[8][col] = 1;
                     nuevoMapa[8][col+1] = 1;
                     nuevoMapa[8][col+2] = 1;
+                }else if (col % 10 == 0) {
+
+                    nuevoMapa[10][col] = PIEDRA;
                 }
             }
         }
@@ -102,7 +109,9 @@ public class Mapa {
                         g2d.drawImage(texturaLava, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
                     } else if (tipoBloque == META) {
                         g2d.drawImage(texturaMeta, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
-                        } 
+                    } else if (tipoBloque == PIEDRA) {
+                        g2d.drawImage(texturaPiedra, xPantalla, yPantalla, TAMAÑO_TILE, TAMAÑO_TILE, null);
+                        }
                     }
                 }
             }
