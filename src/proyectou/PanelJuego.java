@@ -246,7 +246,7 @@ public class PanelJuego extends JPanel implements Runnable {
             g2d.fillRect(0, 0, getWidth(), getHeight());
             g2d.setColor(Color.WHITE);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 60)); 
-            g2d.drawString("¡GAME OVER!", 200, 280);
+            g2d.drawString("#TEAM SISTEMAS", 150, 250);
             g2d.setColor(Color.YELLOW);
             g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 20)); 
             g2d.drawString("Presiona 'R' para volver a intentarlo", 240, 330);
