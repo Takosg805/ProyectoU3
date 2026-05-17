@@ -2,6 +2,8 @@ package proyectou;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
 public class PanelMenu extends JPanel {
@@ -35,10 +37,24 @@ public class PanelMenu extends JPanel {
         // Al presionar jugar, le decimos a la ventana principal que cambie la pantalla
         btnJugar.addActionListener(e -> ventanaPrincipal.mostrarSeleccionPersonaje());
 
-        JButton btnOpciones = new JButton("COMO JUGAR");
+        JButton btnOpciones = new JButton("CREDITOS");
         btnOpciones.setBounds(300, 330, 200, 50);
         btnOpciones.setFont(new Font("Arial", Font.BOLD, 24));
-        btnOpciones.addActionListener(e -> ventanaPrincipal.mostrarSeleccionPersonaje());
+        btnOpciones.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(ventanaPrincipal,String.format("""
+                                                                             Integrantes del equipo:
+                                                                             
+                                                                             MARCOS GARCIA LOPEZ
+                                                                             PEDRO TOMAS GUTIÉRREZ GONZÁLEZ
+                                                                             RICARDO OTTMAR GUTIÉRREZ GUZMÁN
+                                                                             DIEGO PALACIO FLORES
+                                                                             FERNANDO RIVERA PÉREZ
+                                                                             MARIA GUADALUPE ZUÑIGA ALCANTAR
+                                                                             """, null),"COLABORADORES", 1, null);
+            }
+        });
         
         JButton btnSalir = new JButton("SALIR");
         btnSalir.setBounds(300, 410, 200, 50);
@@ -50,7 +66,7 @@ public class PanelMenu extends JPanel {
         add(btnOpciones);
         add(btnSalir);
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

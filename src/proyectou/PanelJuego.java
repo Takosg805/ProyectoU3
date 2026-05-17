@@ -17,7 +17,6 @@ public class PanelJuego extends JPanel implements Runnable {
     private Thread hiloJuego;
     private boolean corriendo = false;
     
-    
 
     private Jugador jugador;
     private NPC npc1, npc2;
@@ -31,7 +30,11 @@ public class PanelJuego extends JPanel implements Runnable {
     private boolean enPausa = false;
     private ProyectoU3 ventanaPrincipal; // referencia a la ventana
     
-    
+    // --- TUTORIAL: Variables ---
+    private Image imagenTutorial;
+    private boolean mostrandoTutorial;
+    private int contadorFramesTutorial;
+    private final int DURACION_TUTORIAL_FRAMES = 180; // 3 segundos a 60 FPS
 
     public PanelJuego(ProyectoU3 ventanaPrincipal,int personajeSeleccionado) {
         setPreferredSize(new Dimension(800, 600)); 
@@ -40,8 +43,10 @@ public class PanelJuego extends JPanel implements Runnable {
         this.personajeSeleccionado = personajeSeleccionado;
         inicializarEntidades();
         
-    
-       
+        // --- TUTORIAL: Inicializar contadores ---
+        mostrandoTutorial = true;
+        contadorFramesTutorial = DURACION_TUTORIAL_FRAMES;
+        
         mapa = new Mapa();
         
         
@@ -49,6 +54,14 @@ public class PanelJuego extends JPanel implements Runnable {
             URL urlFondo = getClass().getResource("fondo.png");
             if (urlFondo != null) {
                 imagenFondo = new ImageIcon(urlFondo).getImage();
+            }
+            
+            // --- TUTORIAL: Cargar la imagen ---
+            URL urlTut = getClass().getResource("Teclado.png");
+            if (urlTut != null) {
+                imagenTutorial = new ImageIcon(urlTut).getImage();
+            } else {
+                System.out.println("Error: No se encontró Teclado.jpg");
             }
         } catch (Exception e) {}
 
@@ -118,6 +131,11 @@ public class PanelJuego extends JPanel implements Runnable {
         mapa = new Mapa();
         inicializarEntidades(); 
         camaraX = 0;
+        
+        // --- TUTORIAL: Reiniciamos para que vuelva a salir ---
+        mostrandoTutorial = true;
+        contadorFramesTutorial = DURACION_TUTORIAL_FRAMES;
+        
         iniciarJuego(); 
     }
 
@@ -155,6 +173,13 @@ public class PanelJuego extends JPanel implements Runnable {
                 camaraX = jugador.x - 100;
                 if (camaraX < 0) camaraX = 0;
                 
+                // --- TUTORIAL: Descontar tiempo ---
+                if (mostrandoTutorial) {
+                    contadorFramesTutorial--;
+                    if (contadorFramesTutorial <= 0) {
+                        mostrandoTutorial = false;
+                    }
+                }
             }
 
             repaint();
@@ -179,6 +204,36 @@ public class PanelJuego extends JPanel implements Runnable {
         jugador.dibujar(g2d,camaraX);
         npc1.dibujar(g2d, camaraX);
         npc2.dibujar(g2d, camaraX);
+        
+        // ========================================================================
+        // MODIFICADO: TUTORIAL CON FONDO BLANCO, MÁS LARGO Y TEXTO "SALTAR" AL LADO
+        // ========================================================================
+        if (mostrandoTutorial && imagenTutorial != null) {
+            int anchoTeclado = 300; // Proporción del teclado alargado
+            int altoTeclado = 220;  // Mantenerlo delgado (no ancho verticalmente)
+            int espacioTexto = 120; // Espacio extra horizontal para la palabra
+            int anchoTotalTarjeta = anchoTeclado + espacioTexto;
+            
+            // Centramos horizontalmente todo el conjunto en la pantalla
+            int xCard = (getWidth() / 2) - (anchoTotalTarjeta / 2);
+            int yCard = 50; // Lo subimos un poco para no tapar al personaje
+            
+            // 1. Dibujamos el fondo blanco de la interfaz del tutorial
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(xCard - 15, yCard - 10, anchoTotalTarjeta + 30, altoTeclado + 20);
+            
+            // 2. Dibujamos un borde negro fino elegante para delimitarlo
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(xCard - 15, yCard - 10, anchoTotalTarjeta + 30, altoTeclado + 20);
+            
+            // 3. Renderizamos tu imagen del teclado original
+            g2d.drawImage(imagenTutorial, xCard, yCard, anchoTeclado, altoTeclado, this);
+            
+            // 4. Escribimos la palabra "Saltar" justo al lado derecho de la imagen
+            g2d.setColor(Color.BLACK);
+            g2d.setFont(new Font("Arial", Font.BOLD, 28));
+            g2d.drawString("Saltar", xCard + anchoTeclado + 15, yCard + (altoTeclado / 2) + 10);
+        }
         
         if (enPausa) {
         g2d.setColor(new Color(0, 0, 0, 150));
